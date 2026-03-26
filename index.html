@@ -564,7 +564,7 @@ function renderScene(conceptId, a, b) {
       </svg>`;
     }
     case 'front_back': {
-      // A = 앞, B = 뒤
+      // A = 앞, B = 뒤  — mask로 앞 도형 영역을 뒤 도형에서 잘라냄
       const offset = 36 + rnd(8);
       const cxB = 155, cyB = 95, cxA = cxB - offset, cyA = cyB + 14;
       return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
@@ -572,11 +572,13 @@ function renderScene(conceptId, a, b) {
           <filter id="fsh">
             <feDropShadow dx="4" dy="4" stdDeviation="4" flood-color="rgba(0,0,0,0.25)"/>
           </filter>
+          <mask id="back-mask">
+            <rect width="280" height="210" fill="white"/>
+            ${shapeAt(a.shape, cxA, cyA, r, 'black', true)}
+          </mask>
         </defs>
-        <g opacity="0.55">${shapeAt(b.shape, cxB, cyB, r, b.color)}</g>
+        <g mask="url(#back-mask)">${shapeAt(b.shape, cxB, cyB, r, b.color)}</g>
         <g filter="url(#fsh)">${shapeAt(a.shape, cxA, cyA, r, a.color)}</g>
-        <text x="${cxA}" y="${cyA+r+14}" font-size="11" font-weight="700" fill="${a.color}" text-anchor="middle" opacity=".8">앞</text>
-        <text x="${cxB}" y="${cyB-r-5}" font-size="11" font-weight="700" fill="${b.color}" text-anchor="middle" opacity=".6">뒤</text>
       </svg>`;
     }
     case 'high_low': {
