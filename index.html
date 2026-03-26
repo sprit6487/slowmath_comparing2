@@ -304,8 +304,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
       <div class="mode-card-top">
         <div class="mode-preview-wrap">
           <svg viewBox="0 0 76 56" width="76" height="52" fill="none">
-            <circle cx="45" cy="24" r="12" fill="#F07070" opacity=".5"/>
-            <circle cx="33" cy="32" r="12" fill="#6BADE8" opacity=".9"/>
+            <circle cx="50" cy="20" r="10" fill="#6BADE8" opacity=".4"/>
+            <circle cx="28" cy="36" r="12" fill="#6BADE8" opacity=".9"/>
           </svg>
         </div>
         <div class="mode-info">
@@ -340,6 +340,27 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
         <button class="mode-btn" onclick="startGame('high_low','a')">높아요</button>
         <button class="mode-btn" onclick="startGame('high_low','b')">낮아요</button>
         <button class="mode-btn" onclick="startGame('high_low','mix')">함께 연습</button>
+      </div>
+    </div>
+    <!-- 왼쪽/오른쪽 -->
+    <div class="mode-card">
+      <div class="mode-card-top">
+        <div class="mode-preview-wrap">
+          <svg viewBox="0 0 76 56" width="76" height="52" fill="none">
+            <line x1="38" y1="4" x2="38" y2="52" stroke="#C8B898" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <circle cx="18" cy="28" r="10" fill="#F07070" opacity=".85"/>
+            <polygon points="58,14 51,30 65,30" fill="#5BC886" opacity=".85"/>
+          </svg>
+        </div>
+        <div class="mode-info">
+          <div class="mode-title">왼쪽에 있어요 / 오른쪽에 있어요</div>
+          <div class="mode-desc">왼쪽과 오른쪽을 비교해요</div>
+        </div>
+      </div>
+      <div class="mode-btns">
+        <button class="mode-btn" onclick="startGame('left_right','a')">왼쪽에 있어요</button>
+        <button class="mode-btn" onclick="startGame('left_right','b')">오른쪽에 있어요</button>
+        <button class="mode-btn" onclick="startGame('left_right','mix')">함께 연습</button>
       </div>
     </div>
   </div>
@@ -432,16 +453,17 @@ const COLORS = ['#F07070','#F0A050','#EDD050','#5BC886','#6BADE8','#4A7CD0','#C0
 const Q_PER_GAME = 10;
 
 const CONCEPTS = {
-  up_down:    { nameA:'위에 있어요', nameB:'아래에 있어요', qA:'위에 있는 것은?',  qB:'아래에 있는 것은?'  },
-  in_out:     { nameA:'안에 있어요', nameB:'밖에 있어요',   qA:'안에 있는 것은?',  qB:'밖에 있는 것은?'   },
-  front_back: { nameA:'앞에 있어요', nameB:'뒤에 있어요',   qA:'앞에 있는 것은?',  qB:'뒤에 있는 것은?'   },
-  high_low:   { nameA:'높아요',      nameB:'낮아요',         qA:'높이 있는 것은?',  qB:'낮게 있는 것은?'   },
+  up_down:    { nameA:'위에 있어요', nameB:'아래에 있어요',   qA:'위에 있는 것은?',    qB:'아래에 있는 것은?'   },
+  in_out:     { nameA:'안에 있어요', nameB:'밖에 있어요',     qA:'안에 있는 것은?',    qB:'밖에 있는 것은?'    },
+  front_back: { nameA:'앞에 있어요', nameB:'뒤에 있어요',     qA:'앞에 있는 것은?',    qB:'뒤에 있는 것은?'    },
+  high_low:   { nameA:'높아요',      nameB:'낮아요',           qA:'높이 있는 것은?',    qB:'낮게 있는 것은?'    },
+  left_right: { nameA:'왼쪽에 있어요', nameB:'오른쪽에 있어요', qA:'왼쪽에 있는 것은?', qB:'오른쪽에 있는 것은?' },
 };
 
 /* ══ 상태 ══ */
 let curConcept, curType, curQuestions, qIdx, score, curQ, locked;
-let ttsOn = true, impulseOn = true, impMode = 'hide', impSecs = 5;
-let impulseTimer = null;
+let ttsOn = true, impulsePrevention = true, impulseMode = 'hide', impulseDelay = 5;
+let delayTimer = null;
 
 /* ══ 뷰 전환 ══ */
 function showView(id) {
@@ -463,30 +485,64 @@ function logout() {
   document.getElementById('logout-btn').style.display = 'none';
   showView('login-view');
 }
-function goHome() { showView('start-view'); }
+function goHome() {
+  if (delayTimer) { clearInterval(delayTimer); delayTimer = null; }
+  showView('start-view');
+}
 
 /* ══ 설정 ══ */
+function saveSettings() {
+  localStorage.setItem('slowmath_comparing2_settings', JSON.stringify(
+    { ttsOn, impulsePrevention, impulseMode, impulseDelay }
+  ));
+}
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem('slowmath_comparing2_settings'));
+    if (!s) return;
+    if (s.ttsOn !== undefined) ttsOn = s.ttsOn;
+    if (s.impulsePrevention !== undefined) impulsePrevention = s.impulsePrevention;
+    if (s.impulseMode) impulseMode = s.impulseMode;
+    if (s.impulseDelay) impulseDelay = s.impulseDelay;
+  } catch(e) {}
+}
+function applySettingsUI() {
+  document.getElementById('tts-toggle').classList.toggle('on', ttsOn);
+  document.getElementById('impulse-toggle').classList.toggle('on', impulsePrevention);
+  document.getElementById('impulse-details').style.display = impulsePrevention ? '' : 'none';
+  document.querySelectorAll('.impulse-mode-btn').forEach(b =>
+    b.classList.toggle('selected', b.dataset.mode === impulseMode)
+  );
+  document.getElementById('impulse-delay-row').style.display = impulseMode === 'lock' ? '' : 'none';
+  document.querySelectorAll('.imp-sec').forEach(b =>
+    b.classList.toggle('active', parseInt(b.textContent) === impulseDelay)
+  );
+}
 function toggleTTS() {
   ttsOn = !ttsOn;
   document.getElementById('tts-toggle').classList.toggle('on', ttsOn);
+  saveSettings();
 }
 function toggleImpulse() {
-  impulseOn = !impulseOn;
-  document.getElementById('impulse-toggle').classList.toggle('on', impulseOn);
-  document.getElementById('impulse-details').style.display = impulseOn ? '' : 'none';
+  impulsePrevention = !impulsePrevention;
+  document.getElementById('impulse-toggle').classList.toggle('on', impulsePrevention);
+  document.getElementById('impulse-details').style.display = impulsePrevention ? '' : 'none';
+  saveSettings();
 }
 function setImpulseMode(mode) {
-  impMode = mode;
+  impulseMode = mode;
   document.querySelectorAll('.impulse-mode-btn').forEach(b =>
     b.classList.toggle('selected', b.dataset.mode === mode)
   );
   document.getElementById('impulse-delay-row').style.display = mode === 'lock' ? '' : 'none';
+  saveSettings();
 }
 function setImpulseDelay(s) {
-  impSecs = s;
+  impulseDelay = s;
   document.querySelectorAll('.imp-sec').forEach(b =>
     b.classList.toggle('active', parseInt(b.textContent) === s)
   );
+  saveSettings();
 }
 
 /* ══ 공유 ══ */
@@ -596,6 +652,15 @@ function renderScene(conceptId, a, b) {
         ${shapeAt(b.shape, bX+pW/2, lowTop-r+2, r, b.color)}
       </svg>`;
     }
+    case 'left_right': {
+      // A = 왼쪽, B = 오른쪽
+      const cyA = 80 + rnd(50), cyB = 80 + rnd(50);
+      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
+        <line x1="140" y1="20" x2="140" y2="190" stroke="#E8E2DA" stroke-width="1.5" stroke-dasharray="8 5"/>
+        ${shapeAt(a.shape, 72, cyA, r, a.color)}
+        ${shapeAt(b.shape, 208, cyB, r, b.color)}
+      </svg>`;
+    }
   }
   return '';
 }
@@ -627,9 +692,12 @@ function buildQuestions(n) {
     // Pick 2 different shapes
     let sA = rnd(SHAPES.length), sB;
     do { sB = rnd(SHAPES.length); } while (sB === sA);
-    // Pick 2 different colors
+    // Pick 2 different colors (front_back는 유사 색상 쌍 제외)
+    const SIMILAR_PAIRS = curConcept === 'front_back' ? [[4,5],[5,4]] : [];
     let cA = rnd(COLORS.length), cB;
-    do { cB = rnd(COLORS.length); } while (cB === cA);
+    do { cB = rnd(COLORS.length); } while (
+      cB === cA || SIMILAR_PAIRS.some(([x,y]) => x===cA && y===cB)
+    );
     const a = { shape: SHAPES[sA], color: COLORS[cA] };
     const b = { shape: SHAPES[sB], color: COLORS[cB] };
     // 질문 방향
@@ -682,7 +750,7 @@ function renderQ() {
   document.getElementById('impulse-area').innerHTML = '';
 
   // 충동방지
-  if (impulseOn) {
+  if (impulsePrevention) {
     applyImpulse();
   } else {
     document.querySelectorAll('.item-card').forEach(c => c.classList.remove('card-locked'));
@@ -692,49 +760,48 @@ function renderQ() {
   if (ttsOn) speak(qText);
 }
 
-/* ══ 충동방지 ══ */
+/* ══ 충동방지 (plusone 방식 동일 구현) ══ */
 function applyImpulse() {
-  clearInterval(impulseTimer);
-  if (impMode === 'hide') {
-    // 보기 숨김
-    document.querySelectorAll('.item-card').forEach(c => {
-      c.style.opacity = '0';
-      c.classList.add('card-locked');
-    });
-    document.getElementById('impulse-area').innerHTML =
-      `<button class="reveal-btn" onclick="revealCards()">보기 확인하기 👀</button>`;
+  const optArea = document.getElementById('compare-row');
+  const impulseArea = document.getElementById('impulse-area');
+  if (impulseMode === 'hide') {
+    optArea.style.visibility = 'hidden';
+    const revealBtn = document.createElement('button');
+    revealBtn.className = 'reveal-btn';
+    revealBtn.textContent = '보기 확인';
+    revealBtn.onclick = () => {
+      optArea.style.visibility = 'visible';
+      revealBtn.remove();
+    };
+    impulseArea.appendChild(revealBtn);
   } else {
-    // 잠금 카운트다운
-    let cnt = impSecs;
-    document.getElementById('impulse-area').innerHTML =
-      `<div class="delay-countdown" id="imp-count">${cnt}</div>`;
-    impulseTimer = setInterval(() => {
-      cnt--;
-      const el = document.getElementById('imp-count');
-      if (el) el.textContent = cnt;
-      if (cnt <= 0) {
-        clearInterval(impulseTimer);
-        document.getElementById('impulse-area').innerHTML = '';
-        document.querySelectorAll('.item-card').forEach(c => c.classList.remove('card-locked'));
+    document.querySelectorAll('.item-card').forEach(b => b.classList.add('card-locked'));
+    let remaining = impulseDelay;
+    const cd = document.createElement('div');
+    cd.className = 'delay-countdown';
+    cd.textContent = remaining;
+    impulseArea.appendChild(cd);
+    delayTimer = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(delayTimer);
+        delayTimer = null;
+        cd.remove();
+        document.querySelectorAll('.item-card').forEach(b => b.classList.remove('card-locked'));
+      } else {
+        cd.textContent = remaining;
       }
     }, 1000);
   }
-}
-
-function revealCards() {
-  document.getElementById('impulse-area').innerHTML = '';
-  document.querySelectorAll('.item-card').forEach(c => {
-    c.style.opacity = '1';
-    c.classList.remove('card-locked');
-  });
 }
 
 /* ══ 선택 ══ */
 function selectCard(idx) {
   if (locked) return;
   locked = true;
-  clearInterval(impulseTimer);
+  if (delayTimer) { clearInterval(delayTimer); delayTimer = null; }
   document.getElementById('impulse-area').innerHTML = '';
+  document.getElementById('compare-row').style.visibility = 'visible';
 
   const correct = idx === curQ.correctIdx;
   const fb = document.getElementById('feedback');
@@ -747,13 +814,13 @@ function selectCard(idx) {
 
   if (correct) {
     score++;
-    fb.textContent = '✅ 맞아요!';
+    fb.textContent = '정답!';
     fb.className = 'feedback correct';
-    if (ttsOn) speak('맞아요');
+    if (ttsOn) speak('정답');
   } else {
-    fb.textContent = '❌ 다시 생각해봐요';
+    fb.textContent = '다시 골라보세요';
     fb.className = 'feedback wrong';
-    if (ttsOn) speak('다시 생각해봐요');
+    if (ttsOn) speak('다시 골라보세요');
   }
 
   document.getElementById('play-score').textContent = `${score}점`;
@@ -797,9 +864,9 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { s.style.display = 'none'; }, 500);
   }, 1400);
 
-  // 충동방지 초기 UI
-  document.getElementById('impulse-details').style.display = '';
-  document.getElementById('impulse-delay-row').style.display = 'none';
+  // 설정 불러오기
+  loadSettings();
+  applySettingsUI();
 
   // 로그인 상태 확인
   if (localStorage.getItem('slowmath_comparing2_login')) {
