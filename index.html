@@ -645,17 +645,16 @@ function renderScene(conceptId, a, b) {
     }
     case 'high_low': {
       // A = 높아요, B = 낮아요
-      const groundY = 190;
-      const highTop = 100, lowTop = 152;
-      const pW = 82;
+      const pW = 82, lHalf = 38;
+      const highCy = 66, lowCy = 130;
       const swap = Math.random() < 0.5;
       const [aX, bX] = swap ? [162, 28] : [28, 162];
+      const aCx = aX + pW/2, bCx = bX + pW/2;
       return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
-        <line x1="12" y1="${groundY}" x2="268" y2="${groundY}" stroke="#C8B898" stroke-width="2"/>
-        <rect x="${aX}" y="${highTop}" width="${pW}" height="${groundY-highTop}" rx="4" fill="#E8DED0" stroke="#C8B898" stroke-width="1.5"/>
-        <rect x="${bX}" y="${lowTop}" width="${pW}" height="${groundY-lowTop}" rx="4" fill="#E8DED0" stroke="#C8B898" stroke-width="1.5"/>
-        ${shapeAt(a.shape, aX+pW/2, highTop-r+2, r, a.color)}
-        ${shapeAt(b.shape, bX+pW/2, lowTop-r+2, r, b.color)}
+        ${shapeAt(a.shape, aCx, highCy, r, a.color)}
+        <line x1="${aCx-lHalf}" y1="${highCy+r+4}" x2="${aCx+lHalf}" y2="${highCy+r+4}" stroke="#C8B898" stroke-width="2.5" stroke-linecap="round"/>
+        ${shapeAt(b.shape, bCx, lowCy, r, b.color)}
+        <line x1="${bCx-lHalf}" y1="${lowCy+r+4}" x2="${bCx+lHalf}" y2="${lowCy+r+4}" stroke="#C8B898" stroke-width="2.5" stroke-linecap="round"/>
       </svg>`;
     }
     case 'left_right': {
