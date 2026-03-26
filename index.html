@@ -476,19 +476,19 @@ function showView(id) {
   ['login-view','start-view','play-view','result-view'].forEach(v =>
     document.getElementById(v).classList.toggle('hidden', v !== id)
   );
+  const lb = document.getElementById('logout-btn');
+  if (lb) lb.style.display = id === 'start-view' && localStorage.getItem('slowmath_comparing2_login') ? 'block' : 'none';
 }
 
 /* ══ 로그인 ══ */
 function socialLogin(provider) {
   localStorage.setItem('slowmath_comparing2_login', provider);
-  document.getElementById('logout-btn').style.display = '';
   const _sp = sessionStorage.getItem('_sp');
   if (_sp) { sessionStorage.removeItem('_sp'); startGame(...JSON.parse(_sp)); return; }
   showView('start-view');
 }
 function logout() {
   localStorage.removeItem('slowmath_comparing2_login');
-  document.getElementById('logout-btn').style.display = 'none';
   showView('login-view');
 }
 function goHome() {
@@ -874,13 +874,8 @@ window.addEventListener('DOMContentLoaded', () => {
   loadSettings();
   applySettingsUI();
 
-  // 로그인 상태 확인
-  if (localStorage.getItem('slowmath_comparing2_login')) {
-    document.getElementById('logout-btn').style.display = '';
-    showView('start-view');
-  } else {
-    showView('login-view');
-  }
+  // 로그인 여부 무관하게 메인화면 표시 (게임 시작 시 로그인 요구)
+  showView('start-view');
 });
 </script>
 </body>
