@@ -114,9 +114,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
 .btn-next-q{display:block;width:100%;max-width:360px;margin:6px auto 0;padding:14px 0;border-radius:16px;border:none;background:#4A4035;color:#fff;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(74,64,53,.15);transition:background .15s,transform .1s;}
 .btn-next-q:active{transform:scale(.98);background:#2E261D;}
 
-.reveal-btn{display:block;width:100%;max-width:320px;margin:6px auto;padding:14px 0;border-radius:14px;border:2px solid #C4AA82;background:#FAF5EE;color:#7B6545;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;text-align:center;}
+.reveal-btn{display:block;width:100%;margin:6px auto;padding:14px 0;border-radius:14px;border:2px solid #C4AA82;background:#FAF5EE;color:#7B6545;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;text-align:center;}
 .reveal-btn:active{background:#F0E6D6;transform:scale(.98);}
 .delay-countdown{text-align:center;font-size:1.5rem;font-weight:900;color:#C4AA82;padding:12px 0;animation:pulse-count 1s ease infinite;}
+#impulse-area{width:100%;}
 
 /* Result View */
 #result-view{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:40px 0;}
@@ -330,11 +331,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
       <div class="mode-card-top">
         <div class="mode-preview-wrap">
           <svg viewBox="0 0 76 56" width="76" height="52" fill="none">
-            <line x1="4" y1="52" x2="72" y2="52" stroke="#C8B898" stroke-width="1.5"/>
-            <rect x="6" y="22" width="22" height="30" rx="3" fill="#E8DED0" stroke="#C8B898" stroke-width="1.5"/>
-            <circle cx="17" cy="14" r="9" fill="#EDD050" opacity=".9"/>
-            <rect x="48" y="40" width="22" height="12" rx="3" fill="#E8DED0" stroke="#C8B898" stroke-width="1.5"/>
-            <polygon points="59,22 52,36 66,36" fill="#5BC886" opacity=".9"/>
+            <circle cx="18" cy="17" r="12" fill="#F0A050" opacity=".9"/>
+            <line x1="6" y1="31" x2="30" y2="31" stroke="#C8B898" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="58,12 50,36 66,36" fill="#6BADE8" opacity=".9"/>
+            <line x1="46" y1="40" x2="70" y2="40" stroke="#C8B898" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
         <div class="mode-info">
@@ -608,19 +608,19 @@ function renderScene(conceptId, a, b) {
     case 'up_down': {
       // A = 위, B = 아래
       const cxA = 120 + rnd(40), cxB = 120 + rnd(40);
-      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
+      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:220px">
         <line x1="25" y1="105" x2="255" y2="105" stroke="#E8E2DA" stroke-width="1.5" stroke-dasharray="8 5"/>
         ${shapeAt(a.shape, cxA, 62, r, a.color)}
         ${shapeAt(b.shape, cxB, 152, r, b.color)}
       </svg>`;
     }
     case 'in_out': {
-      // 박스: x68-212, y32-176. r=36이므로 안쪽 여백 최소 44px 확보
-      const outsidePositions = [[40, 104], [240, 104], [140, 220]];
+      // viewBox 320 폭으로 확장 — 박스: x88-232, y32-176 (r=36, 삼각형 기준 여백 10px 확보)
+      const outsidePositions = [[44, 104], [276, 104], [160, 218]];
       const outsidePos = outsidePositions[Math.floor(Math.random()*3)];
-      const inCx = 112 + rnd(56), inCy = 76 + rnd(56);
-      return `<svg viewBox="0 0 280 260" width="100%" style="max-height:200px">
-        <rect x="68" y="32" width="144" height="144" rx="18" fill="#FAF5EE" stroke="#C8B898" stroke-width="2.5" stroke-dasharray="10 6"/>
+      const inCx = 134 + rnd(50), inCy = 78 + rnd(50);
+      return `<svg viewBox="0 0 320 258" width="100%" style="max-height:220px">
+        <rect x="88" y="32" width="144" height="144" rx="18" fill="#FAF5EE" stroke="#C8B898" stroke-width="2.5" stroke-dasharray="10 6"/>
         ${shapeAt(a.shape, inCx, inCy, r, a.color)}
         ${shapeAt(b.shape, outsidePos[0], outsidePos[1], r, b.color)}
       </svg>`;
@@ -629,7 +629,7 @@ function renderScene(conceptId, a, b) {
       // A = 앞, B = 뒤  — mask로 앞 도형 영역을 뒤 도형에서 잘라냄
       const offset = 36 + rnd(8);
       const cxB = 155, cyB = 95, cxA = cxB - offset, cyA = cyB + 14;
-      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
+      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:220px">
         <defs>
           <filter id="fsh">
             <feDropShadow dx="4" dy="4" stdDeviation="4" flood-color="rgba(0,0,0,0.25)"/>
@@ -650,7 +650,7 @@ function renderScene(conceptId, a, b) {
       const swap = Math.random() < 0.5;
       const [aX, bX] = swap ? [162, 28] : [28, 162];
       const aCx = aX + pW/2, bCx = bX + pW/2;
-      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
+      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:220px">
         ${shapeAt(a.shape, aCx, highCy, r, a.color)}
         <line x1="${aCx-lHalf}" y1="${highCy+r+4}" x2="${aCx+lHalf}" y2="${highCy+r+4}" stroke="#C8B898" stroke-width="2.5" stroke-linecap="round"/>
         ${shapeAt(b.shape, bCx, lowCy, r, b.color)}
@@ -660,7 +660,7 @@ function renderScene(conceptId, a, b) {
     case 'left_right': {
       // A = 왼쪽, B = 오른쪽
       const cyA = 80 + rnd(50), cyB = 80 + rnd(50);
-      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
+      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:220px">
         <line x1="140" y1="20" x2="140" y2="190" stroke="#E8E2DA" stroke-width="1.5" stroke-dasharray="8 5"/>
         ${shapeAt(a.shape, 72, cyA, r, a.color)}
         ${shapeAt(b.shape, 208, cyB, r, b.color)}
