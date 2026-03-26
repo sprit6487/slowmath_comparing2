@@ -515,7 +515,7 @@ function loadSettings() {
 function applySettingsUI() {
   document.getElementById('tts-toggle').classList.toggle('on', ttsOn);
   document.getElementById('impulse-toggle').classList.toggle('on', impulsePrevention);
-  document.getElementById('impulse-details').style.display = impulsePrevention ? '' : 'none';
+  document.getElementById('impulse-details').style.display = impulsePrevention ? 'block' : 'none';
   document.querySelectorAll('.impulse-mode-btn').forEach(b =>
     b.classList.toggle('selected', b.dataset.mode === impulseMode)
   );
@@ -532,7 +532,7 @@ function toggleTTS() {
 function toggleImpulse() {
   impulsePrevention = !impulsePrevention;
   document.getElementById('impulse-toggle').classList.toggle('on', impulsePrevention);
-  document.getElementById('impulse-details').style.display = impulsePrevention ? '' : 'none';
+  document.getElementById('impulse-details').style.display = impulsePrevention ? 'block' : 'none';
   saveSettings();
 }
 function setImpulseMode(mode) {
