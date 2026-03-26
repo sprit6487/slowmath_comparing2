@@ -544,33 +544,32 @@ function shapeAt(shape, cx, cy, r, color, filled=true) {
 
 /* ══ 장면 렌더링 ══ */
 function renderScene(conceptId, a, b) {
-  const r = 28;
+  const r = 36;
   switch(conceptId) {
     case 'up_down': {
       // A = 위, B = 아래
       const cxA = 120 + rnd(40), cxB = 120 + rnd(40);
       return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
         <line x1="25" y1="105" x2="255" y2="105" stroke="#E8E2DA" stroke-width="1.5" stroke-dasharray="8 5"/>
-        <text x="14" y="60" font-size="11" font-weight="700" fill="#C8B898" text-anchor="middle" transform="rotate(-90 14 60)">위</text>
-        <text x="14" y="155" font-size="11" font-weight="700" fill="#C8B898" text-anchor="middle" transform="rotate(-90 14 155)">아래</text>
         ${shapeAt(a.shape, cxA, 62, r, a.color)}
         ${shapeAt(b.shape, cxB, 152, r, b.color)}
       </svg>`;
     }
     case 'in_out': {
-      // A = 안, B = 밖
-      const outsidePos = [[30, 105], [250, 105], [140, 30]][Math.floor(Math.random()*3)];
-      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
-        <rect x="68" y="28" width="144" height="154" rx="18" fill="#FAF5EE" stroke="#C8B898" stroke-width="2.5" stroke-dasharray="10 6"/>
-        <text x="140" y="20" font-size="11" font-weight="700" fill="#C8B898" text-anchor="middle">안</text>
-        ${shapeAt(a.shape, 140, 105, r, a.color)}
+      // 박스: x68-212, y32-176. r=36이므로 안쪽 여백 최소 44px 확보
+      const outsidePositions = [[40, 104], [240, 104], [140, 220]];
+      const outsidePos = outsidePositions[Math.floor(Math.random()*3)];
+      const inCx = 112 + rnd(56), inCy = 76 + rnd(56);
+      return `<svg viewBox="0 0 280 260" width="100%" style="max-height:200px">
+        <rect x="68" y="32" width="144" height="144" rx="18" fill="#FAF5EE" stroke="#C8B898" stroke-width="2.5" stroke-dasharray="10 6"/>
+        ${shapeAt(a.shape, inCx, inCy, r, a.color)}
         ${shapeAt(b.shape, outsidePos[0], outsidePos[1], r, b.color)}
       </svg>`;
     }
     case 'front_back': {
       // A = 앞, B = 뒤
-      const offset = 32 + rnd(8);
-      const cxB = 148, cyB = 98, cxA = cxB - offset, cyA = cyB + 12;
+      const offset = 36 + rnd(8);
+      const cxB = 155, cyB = 95, cxA = cxB - offset, cyA = cyB + 14;
       return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
         <defs>
           <filter id="fsh">
@@ -579,25 +578,23 @@ function renderScene(conceptId, a, b) {
         </defs>
         <g opacity="0.55">${shapeAt(b.shape, cxB, cyB, r, b.color)}</g>
         <g filter="url(#fsh)">${shapeAt(a.shape, cxA, cyA, r, a.color)}</g>
-        <text x="${cxA}" y="${cyA+r+15}" font-size="11" font-weight="700" fill="${a.color}" text-anchor="middle" opacity=".8">앞</text>
-        <text x="${cxB}" y="${cyB-r-6}" font-size="11" font-weight="700" fill="${b.color}" text-anchor="middle" opacity=".6">뒤</text>
+        <text x="${cxA}" y="${cyA+r+14}" font-size="11" font-weight="700" fill="${a.color}" text-anchor="middle" opacity=".8">앞</text>
+        <text x="${cxB}" y="${cyB-r-5}" font-size="11" font-weight="700" fill="${b.color}" text-anchor="middle" opacity=".6">뒤</text>
       </svg>`;
     }
     case 'high_low': {
       // A = 높아요, B = 낮아요
-      const groundY = 186;
-      const highTop = 104, lowTop = 156;
-      const pW = 80;
-      // 좌우 랜덤 배치
+      const groundY = 190;
+      const highTop = 100, lowTop = 152;
+      const pW = 82;
       const swap = Math.random() < 0.5;
-      const [aX, bX] = swap ? [165, 30] : [30, 165];
-      const aTop = highTop, bTop = lowTop;
+      const [aX, bX] = swap ? [162, 28] : [28, 162];
       return `<svg viewBox="0 0 280 210" width="100%" style="max-height:185px">
         <line x1="12" y1="${groundY}" x2="268" y2="${groundY}" stroke="#C8B898" stroke-width="2"/>
-        <rect x="${aX}" y="${aTop}" width="${pW}" height="${groundY-aTop}" rx="4" fill="#E8DED0" stroke="#C8B898" stroke-width="1.5"/>
-        <rect x="${bX}" y="${bTop}" width="${pW}" height="${groundY-bTop}" rx="4" fill="#E8DED0" stroke="#C8B898" stroke-width="1.5"/>
-        ${shapeAt(a.shape, aX+pW/2, aTop-r+2, r, a.color)}
-        ${shapeAt(b.shape, bX+pW/2, bTop-r+2, r, b.color)}
+        <rect x="${aX}" y="${highTop}" width="${pW}" height="${groundY-highTop}" rx="4" fill="#E8DED0" stroke="#C8B898" stroke-width="1.5"/>
+        <rect x="${bX}" y="${lowTop}" width="${pW}" height="${groundY-lowTop}" rx="4" fill="#E8DED0" stroke="#C8B898" stroke-width="1.5"/>
+        ${shapeAt(a.shape, aX+pW/2, highTop-r+2, r, a.color)}
+        ${shapeAt(b.shape, bX+pW/2, lowTop-r+2, r, b.color)}
       </svg>`;
     }
   }
@@ -605,7 +602,7 @@ function renderScene(conceptId, a, b) {
 }
 
 function renderShapeIcon(shape, color) {
-  return `<svg viewBox="0 0 80 80" width="70" height="70">${shapeAt(shape, 40, 40, 28, color)}</svg>`;
+  return `<svg viewBox="0 0 80 80" width="52" height="52">${shapeAt(shape, 40, 40, 28, color)}</svg>`;
 }
 
 function rnd(n) { return Math.floor(Math.random() * n); }
