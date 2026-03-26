@@ -777,6 +777,7 @@ function applyImpulse() {
     revealBtn.textContent = '보기 확인';
     revealBtn.onclick = () => {
       optArea.style.visibility = 'visible';
+      document.querySelectorAll('.item-card').forEach(b => b.classList.remove('card-locked'));
       revealBtn.remove();
     };
     impulseArea.appendChild(revealBtn);
