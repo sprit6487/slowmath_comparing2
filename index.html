@@ -471,7 +471,7 @@ const CONCEPTS = {
   front_back: { nameA:'앞에 있어요', nameB:'뒤에 있어요',     qA:'앞에 있는 것은?',    qB:'뒤에 있는 것은?',
                 qA3:'가장 앞에 있는 것은?', qB3:'가장 뒤에 있는 것은?', qMid3:'가운데에 있는 것은?' },
   high_low:   { nameA:'높아요',      nameB:'낮아요',           qA:'높이 있는 것은?',    qB:'낮게 있는 것은?',
-                qA3:'가장 높이 있는 것은?', qB3:'가장 낮게 있는 것은?', qMid3:'가운데 높이의 것은?' },
+                qA3:'가장 높이 있는 것은?', qB3:'가장 낮게 있는 것은?', qMid3:'가운데에 있는 것은?' },
   left_right: { nameA:'왼쪽에 있어요', nameB:'오른쪽에 있어요', qA:'왼쪽에 있는 것은?', qB:'오른쪽에 있는 것은?',
                 qA3:'가장 왼쪽에 있는 것은?', qB3:'가장 오른쪽에 있는 것은?', qMid3:'가운데에 있는 것은?' },
 };
@@ -717,8 +717,8 @@ function renderScene3(conceptId, items, askWhich) {
       } else {
         return `<svg viewBox="0 0 320 270" width="100%" style="max-height:240px">
           <rect x="88" y="32" width="144" height="144" rx="18" fill="#FAF5EE" stroke="#C8B898" stroke-width="2.5" stroke-dasharray="10 6"/>
-          ${shapeAt(a.shape, 138, 85, r, a.color)}
-          ${shapeAt(mid.shape, 195, 135, r, mid.color)}
+          ${shapeAt(a.shape, 124, 68, r, a.color)}
+          ${shapeAt(mid.shape, 196, 140, r, mid.color)}
           ${shapeAt(b.shape, 44, 104, r, b.color)}
         </svg>`;
       }
@@ -941,25 +941,22 @@ function selectCard(idx) {
   const correct = idx === curQ.correctIdx;
   const fb = document.getElementById('feedback');
 
-  document.getElementById(`card-${curQ.correctIdx}`).classList.add('card-correct');
-  if (!correct) {
-    document.getElementById(`card-${idx}`).classList.add('card-wrong');
-  }
-  document.querySelectorAll('.item-card').forEach(c => c.classList.add('card-locked'));
-
   if (correct) {
+    document.getElementById(`card-${curQ.correctIdx}`).classList.add('card-correct');
+    document.querySelectorAll('.item-card').forEach(c => c.classList.add('card-locked'));
     score++;
     fb.textContent = '정답!';
     fb.className = 'feedback correct';
     if (ttsOn) speak('정답');
+    document.getElementById('play-score').textContent = `${score}점`;
+    document.getElementById('next-q-btn').classList.remove('hidden');
   } else {
+    document.getElementById(`card-${idx}`).classList.add('card-wrong card-locked');
+    locked = false;
     fb.textContent = '다시 골라보세요';
     fb.className = 'feedback wrong';
     if (ttsOn) speak('다시 골라보세요');
   }
-
-  document.getElementById('play-score').textContent = `${score}점`;
-  document.getElementById('next-q-btn').classList.remove('hidden');
 }
 
 function onNextQ() {
