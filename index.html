@@ -54,7 +54,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
 .mode-info{flex:1;text-align:left;}
 .mode-title{font-size:1rem;font-weight:700;color:var(--warm-700);margin-bottom:2px;}
 .mode-desc{font-size:.72rem;color:var(--warm-400);}
-.mode-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.mode-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .mode-btn{flex:1;padding:10px 0;border:2px solid var(--border);border-radius:10px;background:#fff;font-family:inherit;font-size:.72rem;font-weight:700;color:var(--warm-600);cursor:pointer;transition:all .12s;text-align:center;}
 .mode-btn:hover,.mode-btn:active{background:#EEF6FD;border-color:var(--blue);color:var(--blue);}
 
@@ -276,7 +276,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
       <div class="mode-btns">
         <button class="mode-btn" onclick="startGame('up_down','a')">위에 있어요</button>
         <button class="mode-btn" onclick="startGame('up_down','b')">아래에 있어요</button>
-        <button class="mode-btn" onclick="startGame('up_down','mix')">함께 연습</button>
+        <button class="mode-btn" onclick="startGame('up_down','mix')">2개 비교</button>
+        <button class="mode-btn" onclick="startGame('up_down','mix3')">3개 비교</button>
       </div>
     </div>
     <!-- 안/밖 -->
@@ -297,7 +298,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
       <div class="mode-btns">
         <button class="mode-btn" onclick="startGame('in_out','a')">안에 있어요</button>
         <button class="mode-btn" onclick="startGame('in_out','b')">밖에 있어요</button>
-        <button class="mode-btn" onclick="startGame('in_out','mix')">함께 연습</button>
+        <button class="mode-btn" onclick="startGame('in_out','mix')">2개 비교</button>
+        <button class="mode-btn" onclick="startGame('in_out','mix3')">3개 비교</button>
       </div>
     </div>
     <!-- 앞/뒤 -->
@@ -323,7 +325,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
       <div class="mode-btns">
         <button class="mode-btn" onclick="startGame('front_back','a')">앞에 있어요</button>
         <button class="mode-btn" onclick="startGame('front_back','b')">뒤에 있어요</button>
-        <button class="mode-btn" onclick="startGame('front_back','mix')">함께 연습</button>
+        <button class="mode-btn" onclick="startGame('front_back','mix')">2개 비교</button>
+        <button class="mode-btn" onclick="startGame('front_back','mix3')">3개 비교</button>
       </div>
     </div>
     <!-- 높아요/낮아요 -->
@@ -345,7 +348,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
       <div class="mode-btns">
         <button class="mode-btn" onclick="startGame('high_low','a')">높아요</button>
         <button class="mode-btn" onclick="startGame('high_low','b')">낮아요</button>
-        <button class="mode-btn" onclick="startGame('high_low','mix')">함께 연습</button>
+        <button class="mode-btn" onclick="startGame('high_low','mix')">2개 비교</button>
+        <button class="mode-btn" onclick="startGame('high_low','mix3')">3개 비교</button>
       </div>
     </div>
     <!-- 왼쪽/오른쪽 -->
@@ -366,7 +370,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
       <div class="mode-btns">
         <button class="mode-btn" onclick="startGame('left_right','a')">왼쪽에 있어요</button>
         <button class="mode-btn" onclick="startGame('left_right','b')">오른쪽에 있어요</button>
-        <button class="mode-btn" onclick="startGame('left_right','mix')">함께 연습</button>
+        <button class="mode-btn" onclick="startGame('left_right','mix')">2개 비교</button>
+        <button class="mode-btn" onclick="startGame('left_right','mix3')">3개 비교</button>
       </div>
     </div>
   </div>
@@ -459,11 +464,16 @@ const COLORS = ['#F07070','#F0A050','#EDD050','#5BC886','#6BADE8','#4A7CD0','#C0
 const Q_PER_GAME = 10;
 
 const CONCEPTS = {
-  up_down:    { nameA:'위에 있어요', nameB:'아래에 있어요',   qA:'위에 있는 것은?',    qB:'아래에 있는 것은?'   },
-  in_out:     { nameA:'안에 있어요', nameB:'밖에 있어요',     qA:'안에 있는 것은?',    qB:'밖에 있는 것은?'    },
-  front_back: { nameA:'앞에 있어요', nameB:'뒤에 있어요',     qA:'앞에 있는 것은?',    qB:'뒤에 있는 것은?'    },
-  high_low:   { nameA:'높아요',      nameB:'낮아요',           qA:'높이 있는 것은?',    qB:'낮게 있는 것은?'    },
-  left_right: { nameA:'왼쪽에 있어요', nameB:'오른쪽에 있어요', qA:'왼쪽에 있는 것은?', qB:'오른쪽에 있는 것은?' },
+  up_down:    { nameA:'위에 있어요', nameB:'아래에 있어요',   qA:'위에 있는 것은?',    qB:'아래에 있는 것은?',
+                qA3:'가장 위에 있는 것은?', qB3:'가장 아래에 있는 것은?', qMid3:'가운데에 있는 것은?' },
+  in_out:     { nameA:'안에 있어요', nameB:'밖에 있어요',     qA:'안에 있는 것은?',    qB:'밖에 있는 것은?',
+                qA3:'안에 있는 것은?', qB3:'밖에 있는 것은?', qMid3:null },
+  front_back: { nameA:'앞에 있어요', nameB:'뒤에 있어요',     qA:'앞에 있는 것은?',    qB:'뒤에 있는 것은?',
+                qA3:'가장 앞에 있는 것은?', qB3:'가장 뒤에 있는 것은?', qMid3:'가운데에 있는 것은?' },
+  high_low:   { nameA:'높아요',      nameB:'낮아요',           qA:'높이 있는 것은?',    qB:'낮게 있는 것은?',
+                qA3:'가장 높이 있는 것은?', qB3:'가장 낮게 있는 것은?', qMid3:'가운데 높이의 것은?' },
+  left_right: { nameA:'왼쪽에 있어요', nameB:'오른쪽에 있어요', qA:'왼쪽에 있는 것은?', qB:'오른쪽에 있는 것은?',
+                qA3:'가장 왼쪽에 있는 것은?', qB3:'가장 오른쪽에 있는 것은?', qMid3:'가운데에 있는 것은?' },
 };
 
 /* ══ 상태 ══ */
@@ -674,6 +684,92 @@ function renderShapeIcon(shape, color) {
   return `<svg viewBox="0 0 80 80" width="52" height="52">${shapeAt(shape, 40, 40, 28, color)}</svg>`;
 }
 
+function shuffle3(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+/* ══ 3개 장면 렌더링 ══ */
+function renderScene3(conceptId, items, askWhich) {
+  const r = 36;
+  const a = items[0], b = items[1], mid = items[2];
+  switch(conceptId) {
+    case 'up_down': {
+      const cxA = 80+rnd(120), cxM = 80+rnd(120), cxB = 80+rnd(120);
+      return `<svg viewBox="0 0 280 270" width="100%" style="max-height:240px">
+        <line x1="25" y1="90" x2="255" y2="90" stroke="#E8E2DA" stroke-width="1.5" stroke-dasharray="8 5"/>
+        <line x1="25" y1="180" x2="255" y2="180" stroke="#E8E2DA" stroke-width="1.5" stroke-dasharray="8 5"/>
+        ${shapeAt(a.shape, cxA, 45, r, a.color)}
+        ${shapeAt(mid.shape, cxM, 135, r, mid.color)}
+        ${shapeAt(b.shape, cxB, 225, r, b.color)}
+      </svg>`;
+    }
+    case 'in_out': {
+      if (askWhich === 'a') {
+        const inCx = 142+rnd(40), inCy = 80+rnd(40);
+        return `<svg viewBox="0 0 320 270" width="100%" style="max-height:240px">
+          <rect x="88" y="32" width="144" height="144" rx="18" fill="#FAF5EE" stroke="#C8B898" stroke-width="2.5" stroke-dasharray="10 6"/>
+          ${shapeAt(a.shape, inCx, inCy, r, a.color)}
+          ${shapeAt(b.shape, 44, 104, r, b.color)}
+          ${shapeAt(mid.shape, 276, 104, r, mid.color)}
+        </svg>`;
+      } else {
+        return `<svg viewBox="0 0 320 270" width="100%" style="max-height:240px">
+          <rect x="88" y="32" width="144" height="144" rx="18" fill="#FAF5EE" stroke="#C8B898" stroke-width="2.5" stroke-dasharray="10 6"/>
+          ${shapeAt(a.shape, 138, 85, r, a.color)}
+          ${shapeAt(mid.shape, 195, 135, r, mid.color)}
+          ${shapeAt(b.shape, 44, 104, r, b.color)}
+        </svg>`;
+      }
+    }
+    case 'front_back': {
+      const bCx=175, bCy=82, mCx=150, mCy=102, aCx=125, aCy=122;
+      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:220px">
+        <defs>
+          <filter id="fsh3"><feDropShadow dx="4" dy="4" stdDeviation="4" flood-color="rgba(0,0,0,0.25)"/></filter>
+          <mask id="back-mask3">
+            <rect width="280" height="210" fill="white"/>
+            ${shapeAt(mid.shape, mCx, mCy, r, 'black', true)}
+            ${shapeAt(a.shape, aCx, aCy, r, 'black', true)}
+          </mask>
+          <mask id="mid-mask3">
+            <rect width="280" height="210" fill="white"/>
+            ${shapeAt(a.shape, aCx, aCy, r, 'black', true)}
+          </mask>
+        </defs>
+        <g mask="url(#back-mask3)">${shapeAt(b.shape, bCx, bCy, r, b.color)}</g>
+        <g mask="url(#mid-mask3)">${shapeAt(mid.shape, mCx, mCy, r, mid.color)}</g>
+        <g filter="url(#fsh3)">${shapeAt(a.shape, aCx, aCy, r, a.color)}</g>
+      </svg>`;
+    }
+    case 'high_low': {
+      const lHalf = 38;
+      const highCy=52, midCy=132, lowCy=212;
+      const [aX,midX,bX] = shuffle3([55,140,225]);
+      return `<svg viewBox="0 0 280 268" width="100%" style="max-height:268px">
+        ${shapeAt(a.shape, aX, highCy, r, a.color)}
+        <line x1="${aX-lHalf}" y1="${highCy+r+4}" x2="${aX+lHalf}" y2="${highCy+r+4}" stroke="#C8B898" stroke-width="2.5" stroke-linecap="round"/>
+        ${shapeAt(mid.shape, midX, midCy, r, mid.color)}
+        <line x1="${midX-lHalf}" y1="${midCy+r+4}" x2="${midX+lHalf}" y2="${midCy+r+4}" stroke="#C8B898" stroke-width="2.5" stroke-linecap="round"/>
+        ${shapeAt(b.shape, bX, lowCy, r, b.color)}
+        <line x1="${bX-lHalf}" y1="${lowCy+r+4}" x2="${bX+lHalf}" y2="${lowCy+r+4}" stroke="#C8B898" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>`;
+    }
+    case 'left_right': {
+      const cyA=80+rnd(60), cyM=80+rnd(60), cyB=80+rnd(60);
+      return `<svg viewBox="0 0 280 210" width="100%" style="max-height:220px">
+        <line x1="93" y1="20" x2="93" y2="190" stroke="#E8E2DA" stroke-width="1.5" stroke-dasharray="8 5"/>
+        <line x1="187" y1="20" x2="187" y2="190" stroke="#E8E2DA" stroke-width="1.5" stroke-dasharray="8 5"/>
+        ${shapeAt(a.shape, 46, cyA, r, a.color)}
+        ${shapeAt(mid.shape, 140, cyM, r, mid.color)}
+        ${shapeAt(b.shape, 234, cyB, r, b.color)}
+      </svg>`;
+    }
+  }
+  return '';
+}
+
 function rnd(n) { return Math.floor(Math.random() * n); }
 
 /* ══ 게임 시작 ══ */
@@ -694,23 +790,46 @@ function startGame(conceptId, type) {
 function buildQuestions(n) {
   const qs = [];
   for (let i = 0; i < n; i++) {
-    // Pick 2 different shapes
-    let sA = rnd(SHAPES.length), sB;
-    do { sB = rnd(SHAPES.length); } while (sB === sA);
-    // Pick 2 different colors (front_back는 유사 색상 쌍 제외)
-    const SIMILAR_PAIRS = curConcept === 'front_back' ? [[4,5],[5,4]] : [];
-    let cA = rnd(COLORS.length), cB;
-    do { cB = rnd(COLORS.length); } while (
-      cB === cA || SIMILAR_PAIRS.some(([x,y]) => x===cA && y===cB)
-    );
-    const a = { shape: SHAPES[sA], color: COLORS[cA] };
-    const b = { shape: SHAPES[sB], color: COLORS[cB] };
-    // 질문 방향
-    let askA;
-    if (curType === 'a') askA = true;
-    else if (curType === 'b') askA = false;
-    else askA = Math.random() < 0.5;
-    qs.push({ a, b, askA });
+    if (curType === 'mix3') {
+      // ── 3개 비교 ──
+      const si = []; while(si.length < 3) { const s = rnd(SHAPES.length); if(!si.includes(s)) si.push(s); }
+      const SIMILAR_PAIRS3 = curConcept === 'front_back' ? [[4,5],[5,4]] : [];
+      const ci = []; let tries = 0;
+      while(ci.length < 3 && ++tries < 300) {
+        const col = rnd(COLORS.length);
+        if(!ci.includes(col) && !ci.some(x => SIMILAR_PAIRS3.some(([a,b]) => a===x && b===col))) ci.push(col);
+      }
+      const items = [
+        { shape: SHAPES[si[0]], color: COLORS[ci[0]] }, // a: A극단 위치
+        { shape: SHAPES[si[1]], color: COLORS[ci[1]] }, // b: B극단 위치
+        { shape: SHAPES[si[2]], color: COLORS[ci[2]] }, // mid: 가운데 위치
+      ];
+      const hasMid = !!CONCEPTS[curConcept].qMid3;
+      let askWhich;
+      if (!hasMid) {
+        askWhich = Math.random() < 0.5 ? 'a' : 'b';
+      } else {
+        const rv = Math.random();
+        askWhich = rv < 0.333 ? 'a' : rv < 0.667 ? 'b' : 'mid';
+      }
+      qs.push({ items, askWhich, isThree: true });
+    } else {
+      // ── 2개 비교 (기존) ──
+      let sA = rnd(SHAPES.length), sB;
+      do { sB = rnd(SHAPES.length); } while (sB === sA);
+      const SIMILAR_PAIRS = curConcept === 'front_back' ? [[4,5],[5,4]] : [];
+      let cA = rnd(COLORS.length), cB;
+      do { cB = rnd(COLORS.length); } while (
+        cB === cA || SIMILAR_PAIRS.some(([x,y]) => x===cA && y===cB)
+      );
+      const a = { shape: SHAPES[sA], color: COLORS[cA] };
+      const b = { shape: SHAPES[sB], color: COLORS[cB] };
+      let askA;
+      if (curType === 'a') askA = true;
+      else if (curType === 'b') askA = false;
+      else askA = Math.random() < 0.5;
+      qs.push({ a, b, askA });
+    }
   }
   return qs;
 }
@@ -727,41 +846,51 @@ function renderQ() {
   document.getElementById('progress-fill').style.width = `${(qIdx/Q_PER_GAME)*100}%`;
   document.getElementById('play-score').textContent = `${score}점`;
 
-  // 질문
   const concept = CONCEPTS[curConcept];
-  const qText = q.askA ? concept.qA : concept.qB;
+  let qText, order;
+
+  if (q.isThree) {
+    // ── 3개 비교 ──
+    qText = q.askWhich === 'a' ? concept.qA3 : q.askWhich === 'b' ? concept.qB3 : concept.qMid3;
+    document.getElementById('scene-area').innerHTML = renderScene3(curConcept, q.items, q.askWhich);
+    order = shuffle3(['a','b','mid']);
+    const correctIdx3 = order.indexOf(q.askWhich);
+    curQ.order = order; curQ.correctIdx = correctIdx3;
+    const row3 = document.getElementById('compare-row');
+    row3.innerHTML = order.map((pos, i) => {
+      const item = q.items[pos === 'a' ? 0 : pos === 'b' ? 1 : 2];
+      return `<div class="item-card card-locked" id="card-${i}" onclick="selectCard(${i})">
+        <div class="item-visual">${renderShapeIcon(item.shape, item.color)}</div>
+      </div>`;
+    }).join('');
+  } else {
+    // ── 2개 비교 (기존) ──
+    qText = q.askA ? concept.qA : concept.qB;
+    document.getElementById('scene-area').innerHTML = renderScene(curConcept, q.a, q.b);
+    order = Math.random() < 0.5 ? ['a','b'] : ['b','a'];
+    const correctIdx = order.indexOf(q.askA ? 'a' : 'b');
+    curQ.order = order; curQ.correctIdx = correctIdx;
+    const row = document.getElementById('compare-row');
+    row.innerHTML = order.map((pos, i) => {
+      const item = pos === 'a' ? q.a : q.b;
+      return `<div class="item-card card-locked" id="card-${i}" onclick="selectCard(${i})">
+        <div class="item-visual">${renderShapeIcon(item.shape, item.color)}</div>
+      </div>`;
+    }).join('');
+  }
+
   document.getElementById('question-prompt').textContent = qText;
-
-  // 장면
-  document.getElementById('scene-area').innerHTML = renderScene(curConcept, q.a, q.b);
-
-  // 보기 카드 (셔플)
-  const order = Math.random() < 0.5 ? ['a','b'] : ['b','a'];
-  const correctIdx = order.indexOf(q.askA ? 'a' : 'b');
-  curQ.order = order; curQ.correctIdx = correctIdx;
-
-  const row = document.getElementById('compare-row');
-  row.innerHTML = order.map((pos, i) => {
-    const item = pos === 'a' ? q.a : q.b;
-    return `<div class="item-card card-locked" id="card-${i}" onclick="selectCard(${i})">
-      <div class="item-visual">${renderShapeIcon(item.shape, item.color)}</div>
-    </div>`;
-  }).join('');
-
-  // 피드백 초기화
   document.getElementById('feedback').textContent = '';
   document.getElementById('feedback').className = 'feedback';
   document.getElementById('next-q-btn').classList.add('hidden');
   document.getElementById('impulse-area').innerHTML = '';
 
-  // 충동방지
   if (impulsePrevention) {
     applyImpulse();
   } else {
     document.querySelectorAll('.item-card').forEach(c => c.classList.remove('card-locked'));
   }
 
-  // TTS
   if (ttsOn) speak(qText);
 }
 
