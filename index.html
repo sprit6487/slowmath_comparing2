@@ -446,12 +446,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
 
 <!-- ══ 결과 화면 ══ -->
 <div id="result-view" class="hidden">
-  <div class="complete-overlay">
+  <div class="complete-overlay" style="position:relative;margin-top:40px;">
     <div class="complete-emoji" id="result-emoji">🏆</div>
     <div class="complete-msg" id="result-msg"></div>
     <div class="complete-sub" id="result-detail"></div>
     <button class="next-btn" id="result-retry-btn">다시 하기</button>
-    <button class="next-btn" onclick="goHome()" style="margin-top:4px;background:#EDE8E0;color:#8C8070;">홈으로</button>
+    <button class="next-btn" onclick="goHome()" style="margin-top:8px;background:#EDE8E0;color:#8C8070;">홈으로</button>
   </div>
 </div>
 
@@ -970,14 +970,10 @@ function onNextQ() {
 /* ══ 결과 ══ */
 function showResult() {
   showView('result-view');
-  const pct = Math.round(score / Q_PER_GAME * 100);
-  let emoji = '🏆', msg = '완벽해요!';
-  if (pct < 50) { emoji = '😊'; msg = '조금 더 연습해봐요!'; }
-  else if (pct < 80) { emoji = '👍'; msg = '잘 하고 있어요!'; }
-  else if (pct < 100) { emoji = '🌟'; msg = '거의 다 맞았어요!'; }
-  document.getElementById('result-emoji').textContent = emoji;
-  document.getElementById('result-msg').textContent = msg;
-  document.getElementById('result-detail').textContent = `${Q_PER_GAME}문제 중 ${score}개 정답 (${pct}%)`;
+  const total = Q_PER_GAME;
+  document.getElementById('result-emoji').textContent = score === total ? '🏆' : '👏';
+  document.getElementById('result-msg').textContent = total + '문제 완료!';
+  document.getElementById('result-detail').textContent = total + '문제 중 ' + score + '개 정답';
   document.getElementById('result-retry-btn').onclick = () => startGame(curConcept, curType);
 }
 
