@@ -230,6 +230,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100dv
 @keyframes popIn{0%{transform:scale(.8);opacity:.5}45%{transform:scale(1.15)}65%{transform:scale(.92)}80%{transform:scale(1.05)}100%{transform:scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @keyframes pulse-count{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.7}}
+
+/* Hide share button/bubble when not logged in */
+body:not(.sm-loggedin) [title="공유하기"],
+body:not(.sm-loggedin) #share-bubble { display: none !important; }
 </style>
 </head>
 <body>
@@ -1123,6 +1127,21 @@ window.addEventListener('DOMContentLoaded', () => {
   // 로그인 여부 무관하게 메인화면 표시 (게임 시작 시 로그인 요구)
   showView('start-view');
 });
+
+// Share visibility: hide when logged out
+(function() {
+  var _SM_KEY = 'slowmath_comparing2_login';
+  function _updateShareVis() {
+    document.body.classList.toggle('sm-loggedin', !!localStorage.getItem(_SM_KEY));
+  }
+  _updateShareVis();
+  ['socialLogin','socialLogout','goLogin'].forEach(function(fn) {
+    if (typeof window[fn] === 'function') {
+      var _orig = window[fn];
+      window[fn] = function() { _orig.apply(this, arguments); _updateShareVis(); };
+    }
+  });
+})();
 </script>
 </body>
 </html>
